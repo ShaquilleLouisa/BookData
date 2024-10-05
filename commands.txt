@@ -1,0 +1,21 @@
+ctrl + shift + P 
+Create Environment 
+Venv
+
+pip install briefcase
+
+briefcase new
+
+cd "new folder name"
+
+briefcase dev
+
+briefcase package
+
+briefcase create android
+
+briefcase build android
+
+briefcase run android
+
+https://www.youtube.com/watch?v=CvjepVlYR2M
