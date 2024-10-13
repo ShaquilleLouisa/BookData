@@ -9,8 +9,7 @@ author = "Shaquille Louisa"
 author_email = "shaq.louisa@gmail.com"
 
 [tool.briefcase.app.bookdata]
-primary_color = "#A9A9A9"
-primary_color_dark = "#808080"
+primary_color_dark = "#000000"
 formal_name = "Book Data"
 description = "You can use this app to track the books you have read and compare your reading speed over time."
 long_description = """More details about the app should go here.
@@ -172,7 +171,7 @@ base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 build_gradle_dependencies = [
     "com.google.android.material:material:1.11.0",
     # Needed for DetailedList
-    # "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
     # Needed for MapView
     # "org.osmdroid:osmdroid-android:6.1.0",
 ]
