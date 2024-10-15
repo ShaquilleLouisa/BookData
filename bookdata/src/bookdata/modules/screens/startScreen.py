@@ -1,7 +1,8 @@
 from bookdata.modules.widgets import *
 
 class StartScreen:
-    def startup(self):
+    def startup(self, openBookInfoScreen):
+        StartScreen.openBookInfoScreen = openBookInfoScreen
         startScreen = toga.Box(style=Pack(background_color=Widgets.primaryColor, flex = 1, padding=5))
         outline, box = Widgets.createBox(self, COLUMN, (0,0,0,0), (1,1,1,1), 1)
         box.add(StartScreen.createTopBar(self, "Books"))
@@ -47,13 +48,16 @@ class StartScreen:
                 padding_bottom=1
             )
         )
-        box.add(Widgets.createLabel(self, bookName, (0,0,0,0), (0,0,0,0), 1))
+        box.add(Widgets.createButton(self, bookName, StartScreen.openBook, (0,0,0,0), (0, 0, 0, 0), 1)[0])
         box.add(Widgets.createButton(self, "Remove", StartScreen.deleteBook, (0,0,0,0), (0, 0, 1, 0))[0])
         outline.add(box)
         StartScreen.books.add(outline)
 
     def deleteBook(self, **_: any):
         StartScreen.books.remove(self.parent.parent.parent.parent)
+        
+    def openBook(self):
+        StartScreen.openBookInfoScreen(self.parent.children[0].text)
  
     
     
