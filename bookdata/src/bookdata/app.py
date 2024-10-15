@@ -10,10 +10,16 @@ from bookdata.modules.widgets import *
 class BookData(toga.App):
     def startup(self):
         BookData.mainBox = toga.Box(style=Pack(background_color=Widgets.primaryColor))
+        BookData.loadData(self, f"{self.paths.data}\mydata.json")
         BookData.mainBox.add(StartScreen.startup(self, self.openBookInfoScreen))
         self.main_window = toga.Window(title=self.formal_name, closable=True)
         self.main_window.content = self.mainBox
         self.main_window.show()
+        
+    def loadData(self, dataPath):
+        self.dataPath = dataPath
+        SettingsScreen.loadTheme(self, dataPath)
+        BookData.mainBox.style.update(background_color=Widgets.primaryColor)
         
     def closeScreen():
         BookData.mainBox.remove(BookData.mainBox.children[0])
