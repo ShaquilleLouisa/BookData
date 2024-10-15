@@ -5,6 +5,7 @@ A Mobile Python application designed for tracking the books you have read and co
 This app offers the following functionalities:
 * TODO
 * TODO
+* TODO
   
 ## How to Use:
 TODO
