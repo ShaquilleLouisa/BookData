@@ -1,8 +1,10 @@
 from bookdata.modules.widgets import *
 
 class StartScreen:
-    def startup(self, openBookInfoScreen):
+    
+    def startup(self, openBookInfoScreen, save):
         StartScreen.openBookInfoScreen = openBookInfoScreen
+        StartScreen.save = save
         startScreen = toga.Box(style=Pack(background_color=Widgets.primaryColor, flex = 1, padding=5))
         outline, box = Widgets.createBox(self, COLUMN, (0,0,0,0), (1,1,1,1), 1)
         box.add(StartScreen.createTopBar(self, "Books"))
@@ -10,14 +12,19 @@ class StartScreen:
                                                style=Pack(background_color=Widgets.primaryColor,color=Widgets.textColor, flex=1))
         box.add(StartScreen.bookInput)
         buttons = toga.Box(style=Pack(direction=ROW, flex = 0))
-        buttons.add(Widgets.createButton(self, "Add", StartScreen.addBook, (0,0,0,0), (1,1,0,1), 1)[0])
-        buttons.add(Widgets.createButton(self, "Search", StartScreen.addBook, (0,0,0,0), (1,1,0,0), 1)[0])
+        buttons.add(Widgets.createButton(self, "Add", StartScreen.onClickAddBook, (0,0,0,0), (1,1,0,1), 1)[0])
+        buttons.add(Widgets.createButton(self, "Search", StartScreen.onClickAddBook, (0,0,0,0), (1,1,0,0), 1)[0])
         box.add(StartScreen.bookInput)
         box.add(buttons)
         StartScreen.books = Widgets.createBox(self, COLUMN, (0,0,0,0), (0,0,0,0))[0]
         box.add(StartScreen.books)
+        StartScreen.loadBooks(self)
         startScreen.add(outline)
         return startScreen
+    
+    def loadBooks(self):
+        for value in StartScreen.bookdata:
+            StartScreen.addBook(self, value)
     
     def clearInput(self):
         StartScreen.bookInput.value=""
@@ -35,9 +42,14 @@ class StartScreen:
             (0,0,0,0), (0,1,1,0))[0])
         return topBar
 
-    def addBook(self):
+    def onClickAddBook(self):
         bookName = StartScreen.bookInput.value.strip()
         StartScreen.clearInput(self)
+        StartScreen.bookdata[bookName] = f"Lorem impsum {bookName}"
+        StartScreen.save()
+        StartScreen.addBook(self, bookName)
+        
+    def addBook(self, bookName):
         if not bookName:
             return
         outline = toga.Box(style=Pack(direction=COLUMN, background_color=Widgets.secondaryColor))
@@ -55,6 +67,11 @@ class StartScreen:
 
     def deleteBook(self, **_: any):
         StartScreen.books.remove(self.parent.parent.parent.parent)
+        bookName = self.parent.parent.parent.parent.children[0].children[0].children[0].children[0].text
+        print(bookName)
+        if bookName in StartScreen.bookdata:
+            StartScreen.bookdata.pop(bookName)
+        StartScreen.save()
         
     def openBook(self):
         StartScreen.openBookInfoScreen(self.parent.children[0].text)

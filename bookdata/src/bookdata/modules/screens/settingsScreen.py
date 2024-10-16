@@ -4,9 +4,10 @@ import json
 import os.path
 
 class SettingsScreen(Screen):
-    def startup(self, refresh):
+    def startup(self, refresh, save):
         screen, box = Screen.startup(self, "Settings")
         SettingsScreen.refresh = refresh
+        SettingsScreen.save = save
         buttonOutline, SettingsScreen.button = Widgets.createButton(
             self,
             "Dark Theme",
@@ -29,26 +30,6 @@ class SettingsScreen(Screen):
         box.add(buttonOutline)
         return screen
 
-    def loadTheme(self, path):
-        SettingsScreen.path = path
-        if os.path.isfile(SettingsScreen.path):
-            with open(SettingsScreen.path) as file:
-                SettingsScreen.data = json.load(file)
-                Widgets.primaryColor = SettingsScreen.data["primaryColor"]
-                Widgets.secondaryColor = SettingsScreen.data["secondaryColor"]
-                Widgets.textColor = SettingsScreen.data["textColor"]
-        else:
-            SettingsScreen.saveTheme(self)
-
-    def saveTheme(self):
-        SettingsScreen.data = {
-            "primaryColor": Widgets.primaryColor,
-            "secondaryColor": Widgets.secondaryColor,
-            "textColor": Widgets.textColor,
-        }
-        with open(SettingsScreen.path, "w") as file:
-            json.dump(SettingsScreen.data, file)
-
     def setDarkTheme(self):
         Widgets.primaryColor = "#222222"
         Widgets.secondaryColor = WHITE
@@ -62,5 +43,5 @@ class SettingsScreen(Screen):
         SettingsScreen.updateTheme(self)
         
     def updateTheme(self):
-        SettingsScreen.saveTheme(self)
+        SettingsScreen.save()
         SettingsScreen.refresh()
