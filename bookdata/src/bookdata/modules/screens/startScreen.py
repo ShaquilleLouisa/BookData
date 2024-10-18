@@ -1,15 +1,14 @@
 from bookdata.modules.widgets import *
 
 class StartScreen:
-    
     def startup(self, openBookInfoScreen, save):
         StartScreen.openBookInfoScreen = openBookInfoScreen
         StartScreen.save = save
-        startScreen = toga.Box(style=Pack(background_color=Widgets.primaryColor, flex = 1, padding=5))
+        startScreen = toga.Box(style=Pack(background_color=Widgets.primaryColor, flex = 1, padding = 5, padding_bottom = 0))
         outline, box = Widgets.createBox(self, COLUMN, (0,0,0,0), (1,1,1,1), 1)
         box.add(StartScreen.createTopBar(self, "Books"))
         StartScreen.bookInput = toga.TextInput(value="Book name", on_gain_focus= StartScreen.clearInput,
-                                               style=Pack(background_color=Widgets.primaryColor,color=Widgets.textColor, flex=1))
+                                               style=Pack(background_color=Widgets.primaryColor,color=Widgets.secondaryColor, flex=1))
         box.add(StartScreen.bookInput)
         buttons = toga.Box(style=Pack(direction=ROW, flex = 0))
         buttons.add(Widgets.createButton(self, "Add", StartScreen.onClickAddBook, (0,0,0,0), (1,1,0,1), 1)[0])
