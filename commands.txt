@@ -16,6 +16,6 @@ briefcase create android
 
 briefcase build android
 
-briefcase run android
+briefcase run android (skipping build and just running run is also okay)
 
 https://www.youtube.com/watch?v=CvjepVlYR2M

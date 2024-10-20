@@ -1,4 +1,3 @@
-from bookdata.modules.screens import *
 from bookdata.modules.widgets import *
 
 class SettingsScreen(Screen):

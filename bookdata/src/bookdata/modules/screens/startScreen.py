@@ -44,7 +44,7 @@ class StartScreen:
     def onClickAddBook(self):
         bookName = StartScreen.bookInput.value.strip()
         StartScreen.clearInput(self)
-        StartScreen.bookdata[bookName] = f"Lorem impsum {bookName}"
+        StartScreen.bookdata[bookName] = {"info" : f"Lorem impsum {bookName}", "status" : "Plan To Read"}
         StartScreen.save()
         StartScreen.addBook(self, bookName)
         
