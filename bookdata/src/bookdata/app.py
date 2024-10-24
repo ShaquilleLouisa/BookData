@@ -20,7 +20,7 @@ class BookData(toga.App):
         self.main_window = toga.Window(title=self.formal_name, closable=True)
         self.main_window.content = self.mainBox
         self.main_window.show()
-
+        
     def loadData(self):
         BookData.dataPath = f"{self.paths.data}\mydata.json"
         if sys.platform == "win32":

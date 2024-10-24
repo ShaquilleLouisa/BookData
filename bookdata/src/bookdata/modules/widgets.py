@@ -4,6 +4,7 @@ from toga.colors import WHITE, BLACK, RED, BLUE
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
+
 class Widgets:
     darkThemePrimaryColor = "#222222"
     darkThemeSecondaryColor = "#ffffff"
@@ -16,24 +17,84 @@ class Widgets:
 
     toggles = {}
     optionToggles = {}
-    optionToggleValue = {}
+    optionToggleValues = {}
+    optionTogglecanDisable = {}
+    numberInputs = {}
+    numberInputValues = {}
+    dateInputs = {}
+    dateInputValues = {}
 
     editingEnabled = False
 
     currentlyMaking = ""
 
     widgetCount = 0
-    
-    updateData = lambda : ()
 
-    def createLabel(
+    updateData = lambda: ()
+
+    def createLabel(self, text):
+        return toga.Label(
+            text=text,
+            style=Pack(
+                background_color=Widgets.primaryColor,
+                color=Widgets.secondaryColor,
+                font_size=15,
+                height=40,
+                padding_top=8,
+                padding_left=12,
+            ),
+        )
+
+    def createBoxedLabel(
+        self, text, padding=(0, 0, 0, 0), borders=(1, 1, 1, 1), flex=0, height=0
+    ):
+        height = height // 2
+        outline, box = Widgets.createBox(self, COLUMN, padding, borders, flex)
+
+        labels = []
+        if len(text) > 15:
+            for i in range(2):
+                labels.append(
+                    toga.Label(
+                        (text[: len(text) // 2] if i == 0 else text[len(text) // 2 :]),
+                        style=Pack(
+                            background_color=Widgets.primaryColor,
+                            color=Widgets.secondaryColor,
+                            flex=1,
+                            text_align=CENTER,
+                        ),
+                    )
+                )
+                box.add(labels[i])
+        else:
+            labels.append(
+                toga.Label(
+                    text,
+                    style=Pack(
+                        background_color=Widgets.primaryColor,
+                        color=Widgets.secondaryColor,
+                        flex=1,
+                        text_align=CENTER,
+                    ),
+                )
+            )
+            box.add(labels[0])
+        if height > 0:
+            fontSize = max(1, (height + 2) - (len(text) // 2))
+            for label in labels:
+                label.style.update(font_size=fontSize)
+                label.style.update(text_align=CENTER)
+        outline.add(box)
+        return outline
+
+    def createInput(
         self, text, padding=(0, 0, 0, 0), borders=(1, 1, 1, 1), flex=0, height=0
     ):
         outline, box = Widgets.createBox(self, COLUMN, padding, borders, flex)
-        label = toga.Label(
-            text,
+        textInput = toga.TextInput(
+            value=text,
+            on_gain_focus=Widgets.clearInput,
             style=Pack(
-                padding=0,
                 background_color=Widgets.primaryColor,
                 color=Widgets.secondaryColor,
                 flex=flex,
@@ -41,11 +102,83 @@ class Widgets:
             ),
         )
         if height > 0:
-            label.style.update(height=height)
-            label.style.update(font_size=height / 2 + 2)
-        box.add(label)
-        outline.add(box)
+            textInput.style.update(height=height)
+            textInput.style.update(font_size=height / 2 + 2)
+        box.add(textInput)
         return outline
+
+    def clearInput(self):
+        self.value = ""
+
+    def createDateInput(self, action):
+        return toga.DateInput(
+            on_change=action,
+            style=Pack(
+                background_color=Widgets.primaryColor,
+                color=Widgets.secondaryColor,
+                width=135,
+            )
+        )
+
+    def createStartEndDateInput(self, padding=(0, 0, 0, 0), borders=(0, 1, 0, 0)):
+        outline, box = Widgets.createBox(self, ROW, padding, borders)
+        startDate = Widgets.createDateInput(self, Widgets.setStartDateInputValue)
+        Widgets.dateInputs["startDate"] = startDate
+        endDate = Widgets.createDateInput(self, Widgets.setEndDateInputValue)
+        Widgets.dateInputs["endDate"] = endDate
+        box.add(startDate, toga.Box(self, style=Pack(flex=1)), endDate)
+        return outline
+    
+    def setStartDateInputValue(self):
+        if Widgets.editingEnabled:
+            Widgets.dateInputValues["startDate"] = str(self.value)
+            Widgets.updateData(self)
+        
+    def setEndDateInputValue(self):
+        if Widgets.editingEnabled:
+            Widgets.dateInputValues["endDate"] = str(self.value)
+            Widgets.updateData(self)
+
+    def createNumberInput(self, padding=(0, 0, 0, 0), borders=(0, 1, 0, 0)):
+        outline, box = Widgets.createBox(self, COLUMN, padding, borders)
+        label = Widgets.createLabel(self, "Number of pages")
+        box.add(label)
+        return outline, label
+
+    def setNumberInputPlaceHolder(self):
+        parent = self.parent
+        parent.remove(self)
+        label = Widgets.createLabel(self, "Number of pages")
+        parent.add(label)
+        return label
+
+    def setNumberInput(self):
+        parent = self.parent
+        parent.remove(self)
+        numberInput = toga.NumberInput(
+            on_change=Widgets.setNumberInputValue,
+            style=Pack(
+                background_color=Widgets.primaryColor,
+                color=Widgets.secondaryColor,
+            ),
+        )
+        pos = len(parent.children) - 1
+        parent.insert(pos, numberInput)
+        Widgets.numberInputs["pages"] = numberInput
+        return numberInput
+
+    def setNumberInputText(self, text):
+        parent = self.parent
+        parent.remove(self)
+        numberInput = Widgets.createLabel(self, text)
+        pos = len(parent.children) - 1
+        parent.insert(pos, numberInput)
+        Widgets.numberInputs["pages"] = numberInput
+        return numberInput
+
+    def setNumberInputValue(self):
+        Widgets.numberInputValues["pages"] = str(self.value)
+        Widgets.updateData(self)
 
     def createButton(
         self,
@@ -56,12 +189,14 @@ class Widgets:
         flex=0,
         groupName="",
         height=0,
+        id=0,
+        width=0,
     ):
         outline, box = Widgets.createBox(self, COLUMN, padding, borders, flex)
         Widgets.widgetCount += 1
-        self.button = toga.Button(
+        button = toga.Button(
             id=(
-                groupName + text + "t"
+                groupName + str(id)
                 if groupName != ""
                 else f"button{Widgets.widgetCount}"
             ),
@@ -75,37 +210,51 @@ class Widgets:
             ),
         )
         if height > 0:
-            self.button.style.update(height=height)
-        box.add(self.button)
-        outline.add(box)
-        return outline, self.button
+            button.style.update(height=height)
 
-    def createOptionsToggle(self, texts, padding=(0, 0, 0, 0), borders=(1, 1, 1, 1)):
+        if width > 0:
+            button.style.update(width=width)
+
+        if len(text) > 33:
+            button.style.update(font_size=10 - (len(text) - 34))
+
+        box.add(button)
+        outline.add(box)
+        return outline, button
+
+    def createOptionsToggle(
+        self, texts, canDisable=False, padding=(0, 0, 0, 0), borders=(0, 1, 0, 0)
+    ):
         groupName = str(texts)
         outline, box = Widgets.createBox(self, ROW, padding, borders)
         if groupName not in Widgets.optionToggles:
             Widgets.optionToggles[groupName] = {}
-            Widgets.optionToggleValue[groupName] = ""
+            Widgets.optionToggleValues[groupName] = ""
         for i in range(len(texts)):
             toggle = Widgets.createToggle(
                 self,
                 texts[i],
                 Widgets.setOptionsToggleValue,
-                None,
+                Widgets.disableOptionsToggle if canDisable else None,
                 (0, 0, 0, 0),
                 (1, 1, 1, 1),
                 1,
                 groupName,
+                i,
             )[1]
-            Widgets.optionToggles[groupName][texts[i]] = toggle
+            Widgets.optionToggles[groupName][texts[i] + str(i)] = toggle
+            width = 381 / len(texts)
+            if width % 2 != 1 and i == len(texts) - 1:
+                width += 1
+            toggle.style.update(width=width)
             box.add(toggle)
         return outline
 
     def setOptionsToggleValue(self):
-        groupKey = self.id.replace(f"{self.text}t", "")
-        for key in Widgets.optionToggles[groupKey]:
-            if Widgets.optionToggles[groupKey][key].text == self.text:
-                Widgets.optionToggleValue[groupKey] = self.text
+        groupKey = self.id[:-1]
+        for index, key in enumerate(Widgets.optionToggles[groupKey]):
+            if str(index) == self.id[-1:]:
+                Widgets.optionToggleValues[groupKey] = key
             else:
                 Widgets.optionToggles[groupKey][key].style.update(
                     background_color=Widgets.primaryColor
@@ -113,6 +262,11 @@ class Widgets:
                 Widgets.optionToggles[groupKey][key].style.update(
                     color=Widgets.secondaryColor
                 )
+        Widgets.updateData(self)
+
+    def disableOptionsToggle(self):
+        groupKey = self.id[:-1]
+        Widgets.optionToggleValues[groupKey] = ""
         Widgets.updateData(self)
 
     def createToggle(
@@ -124,9 +278,10 @@ class Widgets:
         borders=(1, 1, 1, 1),
         flex=0,
         groupName="",
+        id=0,
     ):
         outline, button = Widgets.createButton(
-            self, text, Widgets.toggle, padding, borders, flex, groupName
+            self, text, Widgets.toggle, padding, borders, flex, groupName, 0, id
         )
         Widgets.toggles[text] = (enableAction, disableAction)
         return outline, button
@@ -146,8 +301,8 @@ class Widgets:
         def turnOff():
             if self.text in Widgets.toggles and Widgets.toggles[self.text][1] != None:
                 Widgets.toggles[self.text][1](self)
-            self.style.update(background_color=Widgets.primaryColor)
-            self.style.update(color=Widgets.secondaryColor)
+                self.style.update(background_color=Widgets.primaryColor)
+                self.style.update(color=Widgets.secondaryColor)
 
         if str(parentColor) == str(Widgets.lightThemeSecondaryColor):
             if str(buttonColor) == str(Widgets.lightThemePrimaryColor):
@@ -191,7 +346,7 @@ class Widgets:
         res = str(rgb)[4:-1]
         res = tuple(map(int, res.split(", ")))
         return "#%02x%02x%02x" % res
-    
+
 
 class Screen:
     def startup(self, title, rightWidget=None):
@@ -209,19 +364,18 @@ class Screen:
         return screen, box
 
     def createTopBar(self, title, rightWidget=None):
-        topBar = toga.Box(
-            style=Pack(direction=ROW, background_color=Widgets.primaryColor)
-        )
-        topBar.add(
+        topBar, box = Widgets.createBox(self, ROW, (0, 0, 0, 0), (0, 1, 0, 0))
+        box.add(
             Widgets.createButton(
-                self, "Back", self.openStartScreen, (0, 0, 0, 0), (0, 1, 0, 1)
+                self, "Back", self.openStartScreen, (0, 0, 0, 0), (0, 0, 0, 1)
             )[0]
         )
-        topBar.add(
-            Widgets.createLabel(self, title, (0, 0, 0, 0), (0, 1, 0, 0), True, 48)
+        box.add(
+            Widgets.createBoxedLabel(self, title, (0, 0, 0, 0), (0, 0, 0, 0), True, 48)
         )
+
         if rightWidget is not None:
-            topBar.add(rightWidget)
+            box.add(rightWidget)
         return topBar
 
     def createScrollContainer(self, boxOutline):

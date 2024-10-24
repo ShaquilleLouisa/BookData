@@ -29,27 +29,27 @@ class StartScreen:
         StartScreen.bookInput.value=""
     
     def createTopBar(self, title):
-        topBar = toga.Box(style=Pack(direction=ROW, background_color=Widgets.primaryColor))
-        topBar.add(Widgets.createButton(
+        topBar, box = Widgets.createBox(self, ROW, (0, 0, 0, 0), (0, 1, 0, 0))
+        box.add(Widgets.createButton(
             self, "Stat", 
             self.openStatisticsScreen,
-            (0,0,0,0), (0,1,0,1))[0])
-        topBar.add(Widgets.createLabel(self, title, (0,0,0,0), (0,1,0,0), True, 48))
-        topBar.add(Widgets.createButton(
+            (0,0,0,0), (0,0,0,1))[0])
+        box.add(Widgets.createBoxedLabel(self, title, (0,0,0,0), (0,0,0,0), True, 48))
+        box.add(Widgets.createButton(
             self, "Set", 
             self.openSettingsScreen,
-            (0,0,0,0), (0,1,1,0))[0])
+            (0,0,0,0), (0,0,1,0))[0])
         return topBar
 
     def onClickAddBook(self):
         bookName = StartScreen.bookInput.value.strip()
         StartScreen.clearInput(self)
-        StartScreen.bookdata[bookName] = {"info" : f"Lorem impsum {bookName}", "status" : "Plan To Read"}
+        StartScreen.bookdata[bookName] = {}
         StartScreen.save()
         StartScreen.addBook(self, bookName)
         
     def addBook(self, bookName):
-        if not bookName:
+        if not bookName or bookName == "Book name":
             return
         outline = toga.Box(style=Pack(direction=COLUMN, background_color=Widgets.secondaryColor))
         box = toga.Box(
@@ -59,7 +59,7 @@ class StartScreen:
                 padding_bottom=1
             )
         )
-        box.add(Widgets.createButton(self, bookName, StartScreen.openBook, (0,0,0,0), (0, 0, 0, 0), 1)[0])
+        box.add(Widgets.createButton(self, bookName, StartScreen.openBook, (0,0,0,0), (0, 0, 0, 0), 1, "", 0, 0, 290)[0])
         box.add(Widgets.createButton(self, "Remove", StartScreen.deleteBook, (0,0,0,0), (0, 0, 1, 0))[0])
         outline.add(box)
         StartScreen.books.add(outline)
