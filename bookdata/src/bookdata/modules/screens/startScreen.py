@@ -16,6 +16,7 @@ class StartScreen:
         box.add(StartScreen.bookInput)
         box.add(buttons)
         StartScreen.books = Widgets.createBox(self, COLUMN, (0,0,0,0), (0,0,0,0))[0]
+        #StartScreen.books, scroll = Widgets.createScrollContainer(self) #Widgets.createBox(self, COLUMN, (0,0,0,0), (0,0,0,0))[0]
         box.add(StartScreen.books)
         StartScreen.loadBooks(self)
         startScreen.add(outline)
@@ -43,14 +44,14 @@ class StartScreen:
 
     def onClickAddBook(self):
         bookName = StartScreen.bookInput.value.strip()
+        if not bookName or bookName == "Book name":
+            return
         StartScreen.clearInput(self)
         StartScreen.bookdata[bookName] = {}
         StartScreen.save()
         StartScreen.addBook(self, bookName)
         
     def addBook(self, bookName):
-        if not bookName or bookName == "Book name":
-            return
         outline = toga.Box(style=Pack(direction=COLUMN, background_color=Widgets.secondaryColor))
         box = toga.Box(
             style=Pack(

@@ -32,6 +32,10 @@ class Widgets:
 
     updateData = lambda: ()
 
+    def createScrollContainer(self):
+        box = toga.Box()
+        return box, toga.ScrollContainer(content=box)
+
     def createLabel(self, text):
         return toga.Label(
             text=text,
@@ -117,7 +121,7 @@ class Widgets:
                 background_color=Widgets.primaryColor,
                 color=Widgets.secondaryColor,
                 width=135,
-            )
+            ),
         )
 
     def createStartEndDateInput(self, padding=(0, 0, 0, 0), borders=(0, 1, 0, 0)):
@@ -127,17 +131,40 @@ class Widgets:
         endDate = Widgets.createDateInput(self, Widgets.setEndDateInputValue)
         Widgets.dateInputs["endDate"] = endDate
         box.add(startDate, toga.Box(self, style=Pack(flex=1)), endDate)
-        return outline
-    
+        return outline, [startDate, endDate]
+
     def setStartDateInputValue(self):
         if Widgets.editingEnabled:
             Widgets.dateInputValues["startDate"] = str(self.value)
             Widgets.updateData(self)
-        
+
     def setEndDateInputValue(self):
         if Widgets.editingEnabled:
             Widgets.dateInputValues["endDate"] = str(self.value)
             Widgets.updateData(self)
+
+    def setDateInputText(self, text, key):
+        parent = self.parent
+        parent.remove(self)
+        label = Widgets.createLabel(self, f"{key[:-4]}: {text}  ")
+        pos = 0 if key == "startDate" else 2
+        parent.insert(pos, label)
+        Widgets.dateInputs[key] = label
+        return label
+
+    def setDateInput(self, key):
+        parent = self.parent
+        parent.remove(self)
+        if key == "startDate":
+            startDate = Widgets.createDateInput(self, Widgets.setStartDateInputValue)
+            Widgets.dateInputs["startDate"] = startDate
+            parent.insert(0, startDate)
+            return startDate
+        elif key == "endDate":
+            endDate = Widgets.createDateInput(self, Widgets.setEndDateInputValue)
+            Widgets.dateInputs["endDate"] = endDate
+            parent.insert(2, endDate)
+            return endDate
 
     def createNumberInput(self, padding=(0, 0, 0, 0), borders=(0, 1, 0, 0)):
         outline, box = Widgets.createBox(self, COLUMN, padding, borders)

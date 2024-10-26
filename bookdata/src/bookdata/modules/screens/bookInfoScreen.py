@@ -26,7 +26,7 @@ class BookInfoScreen(Screen):
         statusOptionsToggle = Widgets.createOptionsToggle(
             self, BookInfoScreen.statusOptions
         )
-        dateInput = Widgets.createStartEndDateInput(self)
+        dateInput, BookInfoScreen.dateInputs = Widgets.createStartEndDateInput(self)
         pageBox, BookInfoScreen.pageInput = Widgets.createNumberInput(self)
         starsOptionsToggle = Widgets.createOptionsToggle(
             self, BookInfoScreen.stars, True
@@ -97,7 +97,7 @@ class BookInfoScreen(Screen):
             else:
                 toggle.style.update(background_color=Widgets.primaryColor)
                 toggle.style.update(color=Widgets.secondaryColor)
-                
+
     def loadDates(self, bookInfo):
         for i in range(len(BookInfoScreen.dates)):
             if BookInfoScreen.dates[i] not in bookInfo:
@@ -106,12 +106,30 @@ class BookInfoScreen(Screen):
             loadedValue = bookInfo[BookInfoScreen.dates[i]]
             Widgets.dateInputValues[BookInfoScreen.dates[i]] = loadedValue
             Widgets.dateInputs[BookInfoScreen.dates[i]].value = loadedValue
+            if loadedValue != "":
+                BookInfoScreen.dateInputs[i] = Widgets.setDateInputText(
+                    BookInfoScreen.dateInputs[i],
+                    f"{loadedValue}",
+                    BookInfoScreen.dates[i],
+                )
+        print("loaded loadDates")
 
     def onEnableClickEdit(self):
         Widgets.editingEnabled = True
         BookInfoScreen.pageInput = Widgets.setNumberInput(BookInfoScreen.pageInput)
         if Widgets.numberInputValues["pages"] not in ["0", "", "None"]:
             BookInfoScreen.pageInput.value = int(Widgets.numberInputValues["pages"])
+        BookInfoScreen.enableEditDates(self)
+
+    def enableEditDates(self):
+        for i in range(len(Widgets.dateInputValues)):
+            BookInfoScreen.dateInputs[i] = Widgets.setDateInput(
+                BookInfoScreen.dateInputs[i], BookInfoScreen.dates[i]
+            )
+            if Widgets.dateInputValues[BookInfoScreen.dates[i]] != "":
+                BookInfoScreen.dateInputs[i].value = Widgets.dateInputValues[
+                    BookInfoScreen.dates[i]
+                ]
 
     def onDisableClickEdit(self):
         Widgets.editingEnabled = False
@@ -123,6 +141,14 @@ class BookInfoScreen(Screen):
         else:
             BookInfoScreen.pageInput = Widgets.setNumberInputPlaceHolder(
                 BookInfoScreen.pageInput
+            )
+        BookInfoScreen.disableEditDates(self)
+
+    def disableEditDates(self):
+        for i in range(len(Widgets.dateInputValues)):
+            value = Widgets.dateInputValues[BookInfoScreen.dates[i]]
+            BookInfoScreen.dateInputs[i] = Widgets.setDateInputText(
+                BookInfoScreen.dateInputs[i], value, BookInfoScreen.dates[i]
             )
 
     def updateData(self):
