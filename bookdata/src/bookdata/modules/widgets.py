@@ -33,8 +33,8 @@ class Widgets:
     updateData = lambda: ()
 
     def createScrollContainer(self):
-        box = toga.Box()
-        return box, toga.ScrollContainer(content=box)
+        box = toga.Box(style=Pack(direction=COLUMN))
+        return box, toga.ScrollContainer(content=box, horizontal=True, vertical=True, style=Pack(direction=COLUMN, flex=1))
 
     def createLabel(self, text):
         return toga.Label(
