@@ -57,7 +57,7 @@ class Widgets:
         )
 
     def createBoxedLabel(
-        self, text, padding=(0, 0, 0, 0), borders=(1, 1, 1, 1), flex=0, height=0
+        self, text, padding=(0, 0, 0, 0), borders=(1, 1, 1, 1), flex=0, height=0, width=0
     ):
         height = height // 2
         outline, box = Widgets.createBox(self, COLUMN, padding, borders, flex)
@@ -91,10 +91,15 @@ class Widgets:
             )
             box.add(labels[0])
         if height > 0:
-            fontSize = max(1, (height + 2) - (len(text) // 2))
+            fontSize = max(1, height - (len(text) // 2))
             for label in labels:
                 label.style.update(font_size=fontSize)
                 label.style.update(text_align=CENTER)
+        outline.add(box)
+        if width > 0:
+            for label in labels:
+                label.style.update(width=width)
+                label.style.update(width=width)
         outline.add(box)
         return outline
 
@@ -116,7 +121,7 @@ class Widgets:
         parent.add(label)
         Widgets.labelInputs["authorName"] = label
         return label
-    
+
     def setLabelInput(self):
         parent = self.parent
         parent.remove(self)
@@ -421,9 +426,10 @@ class Screen:
                 self, "Back", self.openStartScreen, (0, 0, 0, 0), (0, 0, 0, 1)
             )[0]
         )
-        box.add(
-            Widgets.createBoxedLabel(self, title, (0, 0, 0, 0), (0, 0, 0, 0), True, 48)
+        titleBox = Widgets.createBoxedLabel(
+            self, title, (0, 0, 0, 0), (0, 0, 0, 0), True, 48, 200
         )
+        box.add(titleBox)
 
         if rightWidget is not None:
             box.add(rightWidget)
