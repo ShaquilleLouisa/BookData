@@ -27,6 +27,7 @@ class BookInfoScreen(Screen):
             self, BookInfoScreen.statusOptions
         )
         dateInput, BookInfoScreen.dateInputs = Widgets.createStartEndDateInput(self)
+        authorBox, BookInfoScreen.authorNameInput = Widgets.createLabelInput(self)
         pageBox, BookInfoScreen.pageInput = Widgets.createNumberInput(self)
         starsOptionsToggle = Widgets.createOptionsToggle(
             self, BookInfoScreen.stars, True
@@ -37,10 +38,11 @@ class BookInfoScreen(Screen):
                 statusOptionsToggle,
                 starsOptionsToggle,
                 dateInput,
+                authorBox,
                 pageBox,
             ]
         )
-        box.add(statusOptionsToggle, dateInput, pageBox, starsOptionsToggle)
+        box.add(statusOptionsToggle, dateInput, authorBox, pageBox, starsOptionsToggle)
 
         BookInfoScreen.loadInfo(self)
         return screen
@@ -49,6 +51,7 @@ class BookInfoScreen(Screen):
         bookInfo = StartScreen.bookdata[BookInfoScreen.bookName]
         print(bookInfo)
         BookInfoScreen.loadStatus(self, bookInfo, str(BookInfoScreen.statusOptions))
+        BookInfoScreen.loadWriterName(self, bookInfo, "authorName")
         BookInfoScreen.loadNumberOfPages(self, bookInfo, "pages")
         BookInfoScreen.loadStars(self, bookInfo, str(BookInfoScreen.stars))
         BookInfoScreen.loadDates(self, bookInfo)
@@ -69,10 +72,21 @@ class BookInfoScreen(Screen):
                 toggle.style.update(background_color=Widgets.primaryColor)
                 toggle.style.update(color=Widgets.secondaryColor)
 
+    def loadWriterName(self, bookInfo, key):
+        if key not in bookInfo:
+            bookInfo[key] = ""
+        loadedValue = bookInfo[key]
+        print(f"load authorName: {str(loadedValue)}")
+        Widgets.labelInputValues[key] = loadedValue
+        if loadedValue not in ["", "None"]:
+            BookInfoScreen.authorNameInput = Widgets.setNumberInputText(
+                BookInfoScreen.authorNameInput, loadedValue
+            )
+            print("loaded authorName")
+
     def loadNumberOfPages(self, bookInfo, key):
         if key not in bookInfo:
             bookInfo[key] = ""
-            print("make new")
         loadedValue = bookInfo[key]
         print(f"load numberInput: {str(loadedValue)}")
         Widgets.numberInputValues[key] = loadedValue
@@ -117,9 +131,22 @@ class BookInfoScreen(Screen):
     def onEnableClickEdit(self):
         Widgets.editingEnabled = True
         BookInfoScreen.pageInput = Widgets.setNumberInput(BookInfoScreen.pageInput)
+        BookInfoScreen.enableEditPages(self)
+        BookInfoScreen.enableEditAuthorName(self)
+        BookInfoScreen.enableEditDates(self)
+
+    def enableEditPages(self):
         if Widgets.numberInputValues["pages"] not in ["0", "", "None"]:
             BookInfoScreen.pageInput.value = int(Widgets.numberInputValues["pages"])
-        BookInfoScreen.enableEditDates(self)
+
+    def enableEditAuthorName(self):
+        BookInfoScreen.authorNameInput = Widgets.setLabelInput(
+            BookInfoScreen.authorNameInput
+        )
+        if Widgets.labelInputValues["authorName"] not in ["", "None"]:
+            BookInfoScreen.authorNameInput.value = Widgets.labelInputValues[
+                "authorName"
+            ]
 
     def enableEditDates(self):
         for i in range(len(Widgets.dateInputValues)):
@@ -133,8 +160,24 @@ class BookInfoScreen(Screen):
 
     def onDisableClickEdit(self):
         Widgets.editingEnabled = False
+        BookInfoScreen.disableEditAuthorName(self)
+        BookInfoScreen.disableEditPages(self)
+        BookInfoScreen.disableEditDates(self)
+
+    def disableEditAuthorName(self):
+        value = Widgets.labelInputValues["authorName"]
+        if value not in ["", "None"]:
+            BookInfoScreen.authorNameInput = Widgets.setLabelInputText(
+                BookInfoScreen.authorNameInput, value
+            )
+        else:
+            BookInfoScreen.authorNameInput = Widgets.setLabelInputPlaceHolder(
+                BookInfoScreen.authorNameInput
+            )
+
+    def disableEditPages(self):
         value = Widgets.numberInputValues["pages"]
-        if Widgets.numberInputValues["pages"] not in ["0", "", "None"]:
+        if value not in ["0", "", "None"]:
             BookInfoScreen.pageInput = Widgets.setNumberInputText(
                 BookInfoScreen.pageInput, f"{value} pages"
             )
@@ -142,7 +185,6 @@ class BookInfoScreen(Screen):
             BookInfoScreen.pageInput = Widgets.setNumberInputPlaceHolder(
                 BookInfoScreen.pageInput
             )
-        BookInfoScreen.disableEditDates(self)
 
     def disableEditDates(self):
         for i in range(len(Widgets.dateInputValues)):
@@ -157,6 +199,7 @@ class BookInfoScreen(Screen):
         bookData = StartScreen.bookdata[BookInfoScreen.bookName]
         bookData["status"] = status
         BookInfoScreen.updateStarData(self, status, bookData)
+        bookData["authorName"] = Widgets.labelInputValues["authorName"]
         bookData["pages"] = Widgets.numberInputValues["pages"]
         bookData["startDate"] = Widgets.dateInputValues["startDate"]
         bookData["endDate"] = Widgets.dateInputValues["endDate"]

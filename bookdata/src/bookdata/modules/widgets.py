@@ -21,6 +21,8 @@ class Widgets:
     optionTogglecanDisable = {}
     numberInputs = {}
     numberInputValues = {}
+    labelInputs = {}
+    labelInputValues = {}
     dateInputs = {}
     dateInputValues = {}
 
@@ -34,7 +36,12 @@ class Widgets:
 
     def createScrollContainer(self):
         box = toga.Box(style=Pack(direction=COLUMN))
-        return box, toga.ScrollContainer(content=box, horizontal=True, vertical=True, style=Pack(direction=COLUMN, flex=1))
+        return box, toga.ScrollContainer(
+            content=box,
+            horizontal=True,
+            vertical=True,
+            style=Pack(direction=COLUMN, flex=1),
+        )
 
     def createLabel(self, text):
         return toga.Label(
@@ -91,28 +98,45 @@ class Widgets:
         outline.add(box)
         return outline
 
-    def createInput(
-        self, text, padding=(0, 0, 0, 0), borders=(1, 1, 1, 1), flex=0, height=0
-    ):
-        outline, box = Widgets.createBox(self, COLUMN, padding, borders, flex)
-        textInput = toga.TextInput(
-            value=text,
-            on_gain_focus=Widgets.clearInput,
+    def createLabelInput(self, padding=(0, 0, 0, 0), borders=(0, 1, 0, 0)):
+        outline, box = Widgets.createBox(self, COLUMN, padding, borders)
+        label = Widgets.createLabel(self, "Author's name")
+        box.add(label)
+        return outline, label
+
+    def setLabelInputValue(self):
+        if Widgets.editingEnabled:
+            Widgets.labelInputValues["authorName"] = str(self.value)
+            Widgets.updateData(self)
+
+    def setLabelInputText(self, text):
+        parent = self.parent
+        parent.remove(self)
+        label = Widgets.createLabel(self, text)
+        parent.add(label)
+        Widgets.labelInputs["authorName"] = label
+        return label
+    
+    def setLabelInput(self):
+        parent = self.parent
+        parent.remove(self)
+        labelInput = toga.TextInput(
+            on_change=Widgets.setLabelInputValue,
             style=Pack(
                 background_color=Widgets.primaryColor,
                 color=Widgets.secondaryColor,
-                flex=flex,
-                text_align=CENTER,
             ),
         )
-        if height > 0:
-            textInput.style.update(height=height)
-            textInput.style.update(font_size=height / 2 + 2)
-        box.add(textInput)
-        return outline
+        parent.add(labelInput)
+        Widgets.labelInputs["authorName"] = labelInput
+        return labelInput
 
-    def clearInput(self):
-        self.value = ""
+    def setLabelInputPlaceHolder(self):
+        parent = self.parent
+        parent.remove(self)
+        label = Widgets.createLabel(self, "Author's name")
+        parent.add(label)
+        return label
 
     def createDateInput(self, action):
         return toga.DateInput(
