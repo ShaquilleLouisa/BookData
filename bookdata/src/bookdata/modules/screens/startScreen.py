@@ -1,10 +1,12 @@
+from pathlib import Path
 from bookdata.modules.widgets import *
-
 
 class StartScreen:
     bookdata = {}
+    base = None
 
     def startup(self, openBookInfoScreen, save):
+        StartScreen.base = self
         StartScreen.openBookInfoScreen = openBookInfoScreen
         StartScreen.save = save
         startScreen = toga.Box(
@@ -53,7 +55,7 @@ class StartScreen:
         StartScreen.loadBooks(self)
         startScreen.add(outline)
         return startScreen
-
+    
     def loadBooks(self):
         for value in StartScreen.bookdata:
             StartScreen.addBook(self, value)

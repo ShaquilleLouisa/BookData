@@ -23,6 +23,7 @@ class BookData(toga.App):
         
     def loadData(self):
         BookData.dataPath = f"{self.paths.data}\mydata.json"
+        
         if sys.platform == "win32":
             print("testing on pc")
             StartScreen.bookdata = {}
@@ -78,7 +79,7 @@ class BookData(toga.App):
 
     def openStatisticsScreen(self, *_: any):
         BookData.closeScreen()
-        BookData.mainBox.add(StatisticsScreen.startup(self, self.openStartScreen))
+        BookData.mainBox.add(StatisticsScreen.startup(self, self.openStartScreen, StartScreen.bookdata))
 
     def openSettingsScreen(self, *_: any):
         BookData.closeScreen()
