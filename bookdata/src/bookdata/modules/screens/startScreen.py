@@ -32,7 +32,7 @@ class StartScreen:
         buttons = toga.Box(style=Pack(direction=ROW, flex=0))
         buttons.add(
             Widgets.createButton(
-                self, "Add", StartScreen.onClickAddBook, (0, 0, 0, 0), (1, 1, 0, 1), 1
+                self, "Add", StartScreen.onClickAddBook, (0, 0, 0, 0), (1, 0, 0, 1), 1
             )[0]
         )
         buttons.add(
@@ -41,7 +41,7 @@ class StartScreen:
                 "Search",
                 StartScreen.onClickSearchBook,
                 (0, 0, 0, 0),
-                (1, 1, 0, 0),
+                (1, 0, 0, 0),
                 1,
             )[0]
         )

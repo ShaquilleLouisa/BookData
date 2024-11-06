@@ -10,7 +10,7 @@ class StatisticsScreen(Screen):
             style=Pack(
                 background_color=Widgets.primaryColor,
                 color=Widgets.secondaryColor,
-                height=1000
+                height=500
             )
         ))
         return screen
@@ -22,7 +22,7 @@ class StatisticsScreen(Screen):
         for c in str(text):
             row += c
             if c == "}" or previousC + c == ":{":
-                result += "\n" + row 
+                result += row + "\n"
                 row = ""
             previousC = c
         return result

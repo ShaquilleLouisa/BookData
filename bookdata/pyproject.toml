@@ -10,6 +10,9 @@ author_email = "shaq.louisa@gmail.com"
 
 [tool.briefcase.app.bookdata]
 primary_color_dark = "#000000"
+splash_background_color = "#222222"
+base_theme = "#222222"
+accent_color = "#000000"
 formal_name = "Book Data"
 description = "You can use this app to track the books you have read and compare your reading speed over time."
 long_description = """More details about the app should go here.
