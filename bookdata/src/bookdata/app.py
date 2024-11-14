@@ -12,8 +12,11 @@ from bookdata.modules.widgets import *
 
 class BookData(toga.App):
     def startup(self):
+        print("something 1")
         BookData.mainBox = toga.Box(style=Pack(background_color=Widgets.primaryColor))
+        print("something 2")
         BookData.loadData(self)
+        print("something 3")
         BookData.mainBox.add(
             StartScreen.startup(self, self.openBookInfoScreen, self.save)
         )
@@ -23,7 +26,6 @@ class BookData(toga.App):
         
     def loadData(self):
         BookData.dataPath = f"{self.paths.data}\mydata.json"
-        
         if sys.platform == "win32":
             print("testing on pc")
             StartScreen.bookdata = {}
@@ -34,8 +36,13 @@ class BookData(toga.App):
         self.load()
 
     def load(self):
-        with open(BookData.dataPath) as file:
+        print("something 2.1")
+        f = open(BookData.dataPath, "r", encoding= 'utf-8')
+        print(f.read())
+        with open(BookData.dataPath, 'r', encoding= 'utf-8') as file:
+            print("something 2.2")
             data = json.load(file)
+            print("something 2.3")
             Widgets.primaryColor = data["settings"]["primaryColor"]
             Widgets.secondaryColor = data["settings"]["secondaryColor"]
             StartScreen.bookdata = data["books"]
@@ -53,15 +60,20 @@ class BookData(toga.App):
             print("testing on pc")
             return
         print("new save")
-        data = {
-            "settings": {
-                "primaryColor": Widgets.primaryColor,
-                "secondaryColor": Widgets.secondaryColor,
-            },
-            "books": StartScreen.bookdata,
-        }
+        if dataIsDefaultData():
+            data = App.getTemplate()
+        else:
+            data = {
+                "settings": {
+                    "primaryColor": Widgets.primaryColor,
+                    "secondaryColor": Widgets.secondaryColor,
+                },
+                "books": StartScreen.bookdata,
+            }
         with open(BookData.dataPath, "w") as file:
             json.dump(data, file)
+    def dataIsDefaultData():
+        return str(StartScreen.bookdata) == "{}" and Widgets.primaryColor == "#ffffff" and Widgets.primaryColor == "#000000"
 
     def closeScreen():
         Widgets.editingEnabled = False
@@ -91,3 +103,13 @@ class BookData(toga.App):
 
 def main():
     return BookData()
+
+def getTemplate():
+    return {
+        "settings": {
+                "primaryColor": "#ffffff",
+                "secondaryColor": "#000000",
+            },
+            "books": "{}"
+            }
+
