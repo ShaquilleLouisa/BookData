@@ -11,6 +11,7 @@ from bookdata.modules.screens.bookInfoScreen import *
 from bookdata.modules.widgets import *
 
 class BookData(toga.App):
+    loadFromTemplate = True
     def startup(self):
         print("something 1")
         BookData.mainBox = toga.Box(style=Pack(background_color=Widgets.primaryColor))
@@ -32,6 +33,9 @@ class BookData(toga.App):
             return
         if not os.path.isfile(BookData.dataPath):
             print("save not found")
+            self.save()
+        if BookData.loadFromTemplate:
+            print("load from template")
             self.save()
         self.load()
 
@@ -60,8 +64,8 @@ class BookData(toga.App):
             print("testing on pc")
             return
         print("new save")
-        if dataIsDefaultData():
-            data = App.getTemplate()
+        if BookData.loadFromTemplate:
+            data = BookData.getTemplate()
         else:
             data = {
                 "settings": {
@@ -72,8 +76,6 @@ class BookData(toga.App):
             }
         with open(BookData.dataPath, "w") as file:
             json.dump(data, file)
-    def dataIsDefaultData():
-        return str(StartScreen.bookdata) == "{}" and Widgets.primaryColor == "#ffffff" and Widgets.primaryColor == "#000000"
 
     def closeScreen():
         Widgets.editingEnabled = False
@@ -99,17 +101,16 @@ class BookData(toga.App):
         BookData.mainBox.add(
             SettingsScreen.startup(self, self.openSettingsScreen, self.saveData)
         )
+        
+    def getTemplate():
+        return {
+            "settings": {
+                    "primaryColor": "#ff0000",
+                    "secondaryColor": "#000000",
+                },
+                "books": ""
+                }
 
 
 def main():
     return BookData()
-
-def getTemplate():
-    return {
-        "settings": {
-                "primaryColor": "#ffffff",
-                "secondaryColor": "#000000",
-            },
-            "books": "{}"
-            }
-
