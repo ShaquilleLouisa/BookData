@@ -2,7 +2,7 @@ import sys
 import toga
 from toga.colors import WHITE, BLACK, RED, BLUE
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW, CENTER
+from toga.style.pack import COLUMN, ROW, CENTER, BOTTOM
 
 
 class Widgets:
@@ -63,7 +63,7 @@ class Widgets:
         outline, box = Widgets.createBox(self, COLUMN, padding, borders, flex)
 
         labels = []
-        if len(text) > 15:
+        if len(text) > 10:
             for i in range(2):
                 labels.append(
                     toga.Label(
@@ -72,7 +72,7 @@ class Widgets:
                             background_color=Widgets.primaryColor,
                             color=Widgets.secondaryColor,
                             flex=1,
-                            text_align=CENTER,
+                            text_align=CENTER
                         ),
                     )
                 )
@@ -85,20 +85,23 @@ class Widgets:
                         background_color=Widgets.primaryColor,
                         color=Widgets.secondaryColor,
                         flex=1,
-                        text_align=CENTER,
-                    ),
+                        text_align=CENTER
+                    )
                 )
             )
             box.add(labels[0])
         if height > 0:
-            fontSize = max(1, height - (len(text) // 2))
+            # if len(labels) > 1:
+            #     fontSize = max(1, height - (len(text) // 1.1))
+            # else:
+            fontSize = max(1, height - (len(text) // 1.1))
+            
             for label in labels:
                 label.style.update(font_size=fontSize)
                 label.style.update(text_align=CENTER)
         outline.add(box)
         if width > 0:
             for label in labels:
-                label.style.update(width=width)
                 label.style.update(width=width)
         outline.add(box)
         return outline

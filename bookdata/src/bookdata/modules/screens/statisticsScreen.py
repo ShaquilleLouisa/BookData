@@ -15,11 +15,11 @@ class StatisticsScreen(Screen):
         ))
         return screen
     
-    def restructureText(text):
+    def restructureText(self):
         result = ""
         row = ""
         previousC = ""
-        for c in str(text):
+        for c in str(self):
             row += c
             if c == "}" or previousC + c == ":{":
                 result += row + "\n"
