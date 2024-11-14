@@ -11,7 +11,7 @@ from bookdata.modules.screens.bookInfoScreen import *
 from bookdata.modules.widgets import *
 
 class BookData(toga.App):
-    loadFromTemplate = True
+    loadFromTemplate = False
     def startup(self):
         print("something 1")
         BookData.mainBox = toga.Box(style=Pack(background_color=Widgets.primaryColor))
@@ -110,7 +110,6 @@ class BookData(toga.App):
                 },
                 "books": ""
                 }
-
 
 def main():
     return BookData()
