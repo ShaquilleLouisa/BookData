@@ -13,11 +13,8 @@ from bookdata.modules.widgets import *
 class BookData(toga.App):
     loadFromTemplate = False
     def startup(self):
-        print("something 1")
         BookData.mainBox = toga.Box(style=Pack(background_color=Widgets.primaryColor))
-        print("something 2")
         BookData.loadData(self)
-        print("something 3")
         BookData.mainBox.add(
             StartScreen.startup(self, self.openBookInfoScreen, self.save)
         )
@@ -31,22 +28,19 @@ class BookData(toga.App):
             print("testing on pc")
             StartScreen.bookdata = {}
             return
-        if not os.path.isfile(BookData.dataPath):
-            print("save not found")
-            self.save()
         if BookData.loadFromTemplate:
             print("load from template")
+            self.save()
+        elif not os.path.isfile(BookData.dataPath):
+            print("save not found")
             self.save()
         self.load()
 
     def load(self):
-        print("something 2.1")
         f = open(BookData.dataPath, "r", encoding= 'utf-8')
         print(f.read())
         with open(BookData.dataPath, 'r', encoding= 'utf-8') as file:
-            print("something 2.2")
             data = json.load(file)
-            print("something 2.3")
             Widgets.primaryColor = data["settings"]["primaryColor"]
             Widgets.secondaryColor = data["settings"]["secondaryColor"]
             StartScreen.bookdata = data["books"]
